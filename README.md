@@ -1,4 +1,6 @@
 # FAGiL (Foundations of Algebraic Geometry in Lean4)
+[![Lean Action CI](https://github.com/zenith-john/FAGiL/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/zenith-john/FAGiL/actions/workflows/lean_action_ci.yml)
+
 FAGiL consists of proof of theorems (proposition, lemmas, exercises ...) in [Foundations of Algebraic Geometry](https://math216.wordpress.com/) (currently, we use September 2024 version) by Ravi Vakil implemented in [Lean4](https://github.com/leanprover/lean4).
 
 ## Usage
