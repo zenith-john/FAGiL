@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Nantao Zhang, Hongyu Wang. All rights reserved.
+Copyright (c) 2024 Nantao Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author : Nantao Zhang
+Author : Nantao Zhang, Hongyu Wang
 -/
 
 import Mathlib.Algebra.Category.ModuleCat.Basic
@@ -19,8 +19,8 @@ section
 
 /-
 (1.1.2) Set is a category.
-Remark: The set in mathematics is closer to [`Type`] in Lean4.
-And the [`Set`] in mathlib4 is in fact closer to subset in mathematics.
+Remark: The set in mathematics is closer to `Type` in Lean4.
+And the `Set` in mathlib4 is in fact closer to subset in mathematics.
 -/
 
 instance : Category Type where
@@ -71,7 +71,6 @@ instance : Group (X ≅ X) where
 (1.1.4) Abelain groups form a category.
 Defined as Mathlib.Algebra.Category.Grp.Basic.AddCommGrp
 -/
-
 
 /-
 (1.1.5) Module over a ring form a category.
@@ -153,5 +152,42 @@ instance : PartialOrder (OpenSubset γ) where
     exact Set.Subset.antisymm hab hba
 
 instance : Category (OpenSubset γ) where
+
+/-
+(1.1.10) Definition of subcategory
+Remark: The definition of subcategory here is a bit loose, as it allow to have Hom between
+objects not in subcategory.
+-/
+structure Subcategory (C: Type*) [Category C] where
+  carrier : Set C
+  hom_carrier (X: C) (Y: C) : Set (X ⟶ Y)
+  id_mem' {X} : X ∈ carrier → 𝟙 X ∈ hom_carrier X X
+  comp_mem' {X Y Z} :
+    X ∈ carrier → Y ∈ carrier → Z ∈ carrier →
+    ∀ f ∈ hom_carrier X Y, ∀ g ∈ hom_carrier Y Z, f ≫ g ∈ hom_carrier X Z
+
+/-
+(1.1.11) Definition of (covariant) functor and identity functor
+Functor defined as Mathlib.CategoryTheory.Functor.Basic.CategoryTheory.Functor
+Identity functor defined as Mathlib.CategoryTheory.Functor.Basic.CategoryTheory.Functor.id
+The identify functor can be used as 𝟭(\sb1) C
+-/
+
+section
+variable (C: Type*) [Category C]
+#check 𝟭 C
+end section
+
+/-
+(1.1.12.a) Forget functor (to set) is the functor view underlying object as set and forget further
+structures (abelian group, topological space, etc). The forget functor can be defined for concrete
+category, and in mathlib, ConcreteCategory is a category with a forget functor.
+See Mathlib/CategoryTheory/ConcreteCategory/Basic.lean
+-/
+
+/-
+(1.1.12.b) Forget functor from R-Mod to Ab is introduced in
+Mathlib.Algebra.Category.ModuleCat.Basic.ModuleCat.hasForgetToAddCommGroup
+-/
 
 end section
