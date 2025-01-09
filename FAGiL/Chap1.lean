@@ -93,21 +93,25 @@ See TopCat in Mathlib.Topology.Category.TopCat.Basic.lean
 -/
 variable (α: Type*) [PartialOrder α]
 
+instance : Unique Unit where
+  uniq := by
+    intro a
+    rfl
+
 @[ext]
 structure POHom (X: α) (Y: α) where
   mk ::
-  x: Nat
-  p1: x = 0
+  unit: Unit
   p: X ≤ Y
 
 lemma POHom_eq (X Y : α) (a b: POHom α X Y) : a = b := by
   ext
-  rw[a.p1, b.p1]
+
 
 instance : Category α where
   Hom X Y := POHom α X Y
-  id X := POHom.mk 0 rfl (le_refl X)
-  comp f g := POHom.mk 0 rfl (le_trans f.p g.p)
+  id X := POHom.mk () (le_refl X)
+  comp f g := POHom.mk () (le_trans f.p g.p)
   id_comp := by intros; apply POHom_eq
   comp_id := by intros; apply POHom_eq
   assoc := by intros; apply POHom_eq
