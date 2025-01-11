@@ -6,6 +6,8 @@ Author : Nantao Zhang, Hongyu Wang
 
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Group.Defs
+import Mathlib.LinearAlgebra.Dual
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic
 
@@ -189,5 +191,91 @@ See Mathlib/CategoryTheory/ConcreteCategory/Basic.lean
 (1.1.12.b) Forget functor from R-Mod to Ab is introduced in
 Mathlib.Algebra.Category.ModuleCat.Basic.ModuleCat.hasForgetToAddCommGroup
 -/
+
+/-
+(1.1.13) Fundamental group is a functor.
+TODO: The Mathlib has functor from `TopologicalSpace` to `Grpd`, but it require some additional work
+to make it a functor from pointed space to groups.
+-/
+
+/-
+(1.1.14) Hom(A, -) is a functor
+-/
+section
+universe u v
+variable (C: Type u) [Category.{v} C] (X: C)
+def homFunctor : C ⥤ Type v where
+  obj Y := X ⟶ Y
+  map f := fun g => g ≫ f
+
+end section
+
+/-
+(1.1.15) Composition of functor is defined by
+Mathlib.CategoryTheory.Functor.Basic.Functor.comp
+Can be used with notation ⋙
+
+Faithful functor is defined by
+Mathlib.CategoryTheory.Functor.FullyFaithful.CategoryTheory.Functor.Faithful
+
+Full functor is defined by
+Mathlib.CategoryTheory.Functor.FullyFaithful.CategoryTheory.Functor.Full
+
+Fully faithful functor is defined by
+Mathlib.CategoryTheory.Functor.FullyFaithful.CategoryTheory.Functor.FullyFaithful
+
+Full subcategory is defined by
+Mathlib.CategoryTheory.FullSubcategory.CategoryTheory.FullSubcategory
+
+Remark: Some examples about (not) full/faithful functor are omitted.
+-/
+
+/-
+(1.1.16) Opposite category is defined by
+Mathlib.CategoryTheory.Opposites.CategoryTheory.Category.opposite
+Contravariant functor from C to Dcan be defined as functor from Cᵒᵖ to D.
+-/
+def ContravariantFunctor (C D: Type*) [Category C] [Category D] := Functor Cᵒᵖ D
+
+/-
+(1.1.17) Taking dual is a ContravariantFunctor from Vect_k to Vect_k
+-/
+section
+
+variable (k : Type*) [Field k]
+instance : ContravariantFunctor (ModuleCat k) (ModuleCat k) where
+  obj X := ModuleCat.of k (Module.Dual k X.unop)
+  map f := LinearMap.dualMap (Opposite.unop f)
+
+end section
+
+/-
+(1.1.18) Cohomology functor H^i(X, ℤ) is a contravariant functor.
+TODO: Cohomology seems not implemented in Mathlib.
+-/
+
+/-
+(1.1.19) Mapping space to continuous functions on it is a contravariant functor.
+Remark: This is indeed a special case of opHomFunctor. See (1.1.20).
+-/
+
+
+/-
+(1.1.20) Hom(-, A) is a contravariant functor.
+-/
+section
+universe u v
+variable (C: Type u) [Category.{v} C] (X: Cᵒᵖ)
+def opHomFunctor : ContravariantFunctor C (Type v) where
+  obj Y := X ⟶ Y
+  map f := fun g => g ≫ f
+
+end section
+
+/- (* 1.1.19) -/
+section
+instance : TopologicalSpace ℝ := inferInstance
+def continuousFunctionFunctor := opHomFunctor TopCat (Opposite.op (TopCat.of ℝ))
+end section
 
 end section
