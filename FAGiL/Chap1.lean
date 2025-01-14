@@ -16,7 +16,7 @@ open Function
 
 section
 /-
-(1.1.1) The category is defined by Mathlib.CategoryTheory.Category.Basic.Category
+(1.1.1) The category is defined by Category in Mathlib.CategoryTheory.Category.Basic.
 -/
 
 /-
@@ -52,12 +52,12 @@ instance : Category (ModuleCat R) where
     rfl
 
 /-
-(1.1.A) The groupoid is defined by Mathlib.CategoryTheory.Groupoid.Groupoid
+(1.1.A) The groupoid is defined by Groupoid in Mathlib.CategoryTheory.Groupoid.
 -/
 
 /-
-(1.1.B) The invertible morphism is defined by Mathlib.CategoryTheory.Iso.Iso
-The proof is copied from Mathlib.CategoryTheory.Endomorphism
+(1.1.B) The invertible morphism is defined by Iso in Mathlib.CategoryTheory.Iso.
+The proof is copied from Mathlib.CategoryTheory.Endomorphism.
 -/
 variable {C: Type*} [Category C] {X: C}
 instance : Group (X ≅ X) where
@@ -71,7 +71,7 @@ instance : Group (X ≅ X) where
 
 /-
 (1.1.4) Abelain groups form a category.
-Defined as Mathlib.Algebra.Category.Grp.Basic.AddCommGrp
+Defined as Mathlib.Algebra.Category.Grp.Basic.AddCommGrp.
 -/
 
 /-
@@ -81,12 +81,12 @@ See (1.1.3).
 
 /-
 (1.1.6) Rings from a category.
-Defined as Mathlib.Algebra.Category.Ring.Basic.RingCat
+Defined as RingCat in Mathlib.Algebra.Category.Ring.Basic.
 -/
 
 /-
 (1.1.7) Topological spaces form a category.
-See TopCat in Mathlib.Topology.Category.TopCat.Basic.lean
+Defined as TopCat in Mathlib.Topology.Category.TopCat.Basic.lean.
 -/
 
 /-
@@ -169,10 +169,10 @@ structure Subcategory (C: Type*) [Category C] where
     ∀ f ∈ hom_carrier X Y, ∀ g ∈ hom_carrier Y Z, f ≫ g ∈ hom_carrier X Z
 
 /-
-(1.1.11) Definition of (covariant) functor and identity functor
-Functor defined as Mathlib.CategoryTheory.Functor.Basic.CategoryTheory.Functor
-Identity functor defined as Mathlib.CategoryTheory.Functor.Basic.CategoryTheory.Functor.id
-The identify functor can be used as 𝟭(\sb1) C
+(1.1.11) Definition of (covariant) functor and identity functor.
+Functor defined as CategoryTheory.Functor in Mathlib.CategoryTheory.Functor.Basic.
+Identity functor defined as CategoryTheory.Functor.id in Mathlib.CategoryTheory.Functor.Basic.
+The identify functor can be used as 𝟭(\sb1) C.
 -/
 
 section
@@ -184,12 +184,12 @@ end section
 (1.1.12.a) Forget functor (to set) is the functor view underlying object as set and forget further
 structures (abelian group, topological space, etc). The forget functor can be defined for concrete
 category, and in mathlib, ConcreteCategory is a category with a forget functor.
-See Mathlib/CategoryTheory/ConcreteCategory/Basic.lean
+See Mathlib/CategoryTheory/ConcreteCategory/Basic.lean.
 -/
 
 /-
 (1.1.12.b) Forget functor from R-Mod to Ab is introduced in
-Mathlib.Algebra.Category.ModuleCat.Basic.ModuleCat.hasForgetToAddCommGroup
+ModuleCat.hasForgetToAddCommGroup in Mathlib.Algebra.Category.ModuleCat.Basic.
 -/
 
 /-
@@ -199,7 +199,7 @@ to make it a functor from pointed space to groups.
 -/
 
 /-
-(1.1.14) Hom(A, -) is a functor
+(1.1.14) Hom(A, -) is a functor.
 -/
 section
 universe u v
@@ -212,27 +212,27 @@ end section
 
 /-
 (1.1.15) Composition of functor is defined by
-Mathlib.CategoryTheory.Functor.Basic.Functor.comp
-Can be used with notation ⋙
+Functor.comp in Mathlib.CategoryTheory.Functor.Basic.
+Can be used with notation ⋙.
 
 Faithful functor is defined by
-Mathlib.CategoryTheory.Functor.FullyFaithful.CategoryTheory.Functor.Faithful
+CategoryTheory.Functor.Faithful in Mathlib.CategoryTheory.Functor.FullyFaithful.
 
 Full functor is defined by
-Mathlib.CategoryTheory.Functor.FullyFaithful.CategoryTheory.Functor.Full
+CategoryTheory.Functor.Full in Mathlib.CategoryTheory.Functor.FullyFaithful.
 
 Fully faithful functor is defined by
-Mathlib.CategoryTheory.Functor.FullyFaithful.CategoryTheory.Functor.FullyFaithful
+CategoryTheory.Functor.FullyFaithful in Mathlib.CategoryTheory.Functor.FullyFaithful.
 
 Full subcategory is defined by
-Mathlib.CategoryTheory.FullSubcategory.CategoryTheory.FullSubcategory
+CategoryTheory.FullSubcategory in Mathlib.CategoryTheory.FullSubcategory.
 
 Remark: Some examples about (not) full/faithful functor are omitted.
 -/
 
 /-
 (1.1.16) Opposite category is defined by
-Mathlib.CategoryTheory.Opposites.CategoryTheory.Category.opposite
+CategoryTheory.Category.opposite in Mathlib.CategoryTheory.Opposites.
 Contravariant functor from C to Dcan be defined as functor from Cᵒᵖ to D.
 -/
 def ContravariantFunctor (C D: Type*) [Category C] [Category D] := Functor Cᵒᵖ D
@@ -243,7 +243,7 @@ def ContravariantFunctor (C D: Type*) [Category C] [Category D] := Functor Cᵒ�
 section
 
 variable (k : Type*) [Field k]
-instance : ContravariantFunctor (ModuleCat k) (ModuleCat k) where
+instance dualVectorSpaceFunctor: ContravariantFunctor (ModuleCat k) (ModuleCat k) where
   obj X := ModuleCat.of k (Module.Dual k X.unop)
   map f := LinearMap.dualMap (Opposite.unop f)
 
@@ -270,12 +270,107 @@ def opHomFunctor : ContravariantFunctor C (Type v) where
   obj Y := X ⟶ Y
   map f := fun g => g ≫ f
 
-end section
-
 /- (* 1.1.19) -/
-section
 instance : TopologicalSpace ℝ := inferInstance
 def continuousFunctionFunctor := opHomFunctor TopCat (Opposite.op (TopCat.of ℝ))
 end section
+
+/-
+(1.1.21) Natural transformation is defined as
+CategoryTheory.NatTrans in Mathlib.CategoryTheory.NatTrans.
+
+Natural isomorphism in Mathlib is defined to be Iso in Functor.categroy.
+
+Equivalence of categories is defined to be
+CategoryTheory.Equivalence in Mathlib.CategoryTheory.Equivalence.
+-/
+
+/-
+(1.1.C) The double dual of category of finite dimensional vector spaces is an equivalence.
+-/
+section
+universe u v
+-- class FinDimVectorSpace (k : Type*) (V : Type*) [Field k] [AddCommMonoid V] [AddCommGroup V] [Module k V] where
+--   isFinDim: Module.Finite k V
+
+variable (k: Type*) [Field k]
+structure FinDimVectorSpaceCat where
+  mk ::
+  carrier: Type v
+  [isAddCommGroup: AddCommGroup carrier]
+  [isModule: Module k carrier]
+  [isFinDim: FiniteDimensional k carrier]
+
+variable (V : Type*) [AddCommGroup V] [Module k V]
+-- Prove that the dual space is finite-dimensional
+lemma of_dual : FiniteDimensional k V → FiniteDimensional k (Module.Dual k V) := by
+  exact (Module.finite_dual_iff k).mpr
+
+
+attribute [instance] FinDimVectorSpaceCat.isAddCommGroup FinDimVectorSpaceCat.isModule
+
+instance : Category (FinDimVectorSpaceCat k) where
+  Hom V W := V.carrier →ₗ[k] W.carrier
+  id _ := LinearMap.id
+  comp f g := g ∘ₗ f
+
+instance doubleDualFunctor : FinDimVectorSpaceCat k ⥤ FinDimVectorSpaceCat k where
+  obj X := {
+    carrier := (Module.Dual k (Module.Dual k X.carrier)),
+    isAddCommGroup := _,
+    isModule := _,
+    isFinDim := of_dual k (Module.Dual k X.carrier) (of_dual k X.carrier X.isFinDim),
+  }
+  map f := LinearMap.dualMap (LinearMap.dualMap f)
+  map_id := by
+    intros
+    simp
+    rfl
+  map_comp := by
+    intros X Y Z f g
+    simp
+    rfl
+
+noncomputable
+instance idToDoubleDual: NatTrans (𝟭 (FinDimVectorSpaceCat k)) (doubleDualFunctor k) where
+  app X := by
+    have p : Module.Free k X.carrier := by exact Module.Free.of_divisionRing k X.carrier
+    have q : Module.Finite k X.carrier := by exact X.isFinDim
+    simp
+    exact (Module.evalEquiv k X.carrier).toLinearMap
+  naturality f := by
+    -- Generated by aesop?
+    intro Y f_1
+    simp_all only [Functor.id_obj, Functor.id_map, Module.evalEquiv_toLinearMap, id_eq]
+    rfl
+
+-- TODO: Fix this sorry.
+-- noncomputable
+-- instance doubleDualToId: NatTrans (doubleDualFunctor k) (𝟭 (FinDimVectorSpaceCat k)) where
+--   app X := by
+--     have p : Module.Free k X.carrier := by exact Module.Free.of_divisionRing k X.carrier
+--     have q : Module.Finite k X.carrier := by exact X.isFinDim
+--     simp
+--     exact (Module.evalEquiv k X.carrier).symm.toLinearMap
+--   naturality f := sorry
+
+-- TODO: Show idToDoubleDual is Iso in Functor FinDimVectorSpaceCat k.
+
+end section
+
+/-
+(1.1.D) The category of finite dimensional vector space with bases is equivalent to category of
+finite dimensional vector spaces.
+TODO:
+-/
+
+/-
+(1.1.22) A functor is an equivlance of categories if and only if it is full faithful and essentially surjective.
+The definition of CategoryTheory.Functor.IsEquivlance in Mathlib.CategoryTheory.Equivalence is a functor that is full,
+faithful and essentially surjective.
+
+LHS to RHS is CategoryTheory.Equivalence.isEquivalence_functor.
+RHS to LHS is CategoryTheory.Functor.asEquivalence.
+-/
 
 end section
