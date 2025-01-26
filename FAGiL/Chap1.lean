@@ -7,6 +7,7 @@ Author : Nantao Zhang, Hongyu Wang
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic
@@ -344,7 +345,7 @@ instance idToDoubleDual: NatTrans (𝟭 (FinDimVectorSpaceCat k)) (doubleDualFun
     simp_all only [Functor.id_obj, Functor.id_map, Module.evalEquiv_toLinearMap, id_eq]
     rfl
 
--- TODO: Fix this sorry.
+-- -- TODO: Fix this sorry.
 -- noncomputable
 -- instance doubleDualToId: NatTrans (doubleDualFunctor k) (𝟭 (FinDimVectorSpaceCat k)) where
 --   app X := by
@@ -352,17 +353,89 @@ instance idToDoubleDual: NatTrans (𝟭 (FinDimVectorSpaceCat k)) (doubleDualFun
 --     have q : Module.Finite k X.carrier := by exact X.isFinDim
 --     simp
 --     exact (Module.evalEquiv k X.carrier).symm.toLinearMap
---   naturality f := sorry
+--   naturality f := by
+
+--     sorry
 
 -- TODO: Show idToDoubleDual is Iso in Functor FinDimVectorSpaceCat k.
+
 
 end section
 
 /-
 (1.1.D) The category of finite dimensional vector space with bases is equivalent to category of
 finite dimensional vector spaces.
-TODO:
 -/
+section
+variable (k: Type*) [Field k]
+
+/-- A vector space with a chosen basis -/
+structure VectorSpaceWithBasis where
+  mk ::
+  carrier: Type
+  [isAddCommGroup: AddCommGroup carrier]
+  [isModule: Module k carrier]
+  [isFinDim: FiniteDimensional k carrier]
+  basis: Basis (Fin (Module.finrank k carrier)) k carrier
+
+attribute [instance] VectorSpaceWithBasis.isAddCommGroup VectorSpaceWithBasis.isModule
+
+instance : Category (VectorSpaceWithBasis k) where
+  Hom V W := V.carrier →ₗ[k] W.carrier
+  id _ := LinearMap.id
+  comp f g := g ∘ₗ f
+
+/-- Forgetful functor that forgets the basis -/
+def forgetBasis : VectorSpaceWithBasis k ⥤ FinDimVectorSpaceCat k where
+  obj X := {
+    carrier := X.carrier
+    isAddCommGroup := X.isAddCommGroup
+    isModule := X.isModule
+    isFinDim := X.isFinDim
+  }
+  map f := f
+  map_id := by intros; rfl
+  map_comp := by intros; rfl
+
+/-- Choose a basis-functor for a finite-dimensional vector space (using choice) -/
+noncomputable def chooseBasis : FinDimVectorSpaceCat k ⥤ VectorSpaceWithBasis k where
+  obj X := {
+    carrier := X.carrier
+    isAddCommGroup := X.isAddCommGroup
+    isModule := X.isModule
+    isFinDim := X.isFinDim
+    basis := by
+      have p : Module.Free k X.carrier := by exact Module.Free.of_divisionRing k X.carrier
+      have q : Module.Finite k X.carrier := by exact X.isFinDim
+      exact Module.finBasis k X.carrier
+  }
+  map f := f
+  map_id := by intros; rfl
+  map_comp := by intros; rfl
+
+/-- The forgetful functor and basis-choosing functor form an equivalence -/
+noncomputable
+instance vectorSpaceWithBasisEquiv : Equivalence (VectorSpaceWithBasis k) (FinDimVectorSpaceCat k) where
+  functor := forgetBasis k
+  inverse := chooseBasis k
+  unitIso := NatIso.ofComponents
+    (fun X => {
+      hom := LinearMap.id
+      inv := LinearMap.id
+      hom_inv_id := rfl
+      inv_hom_id := rfl
+    })
+    (by intros; rfl
+      )
+  counitIso := NatIso.ofComponents
+    (fun X => {
+      hom := LinearMap.id
+      inv := LinearMap.id
+      hom_inv_id :=  rfl
+      inv_hom_id := rfl
+    })
+    (by intros; rfl)
+end section
 
 /-
 (1.1.22) A functor is an equivlance of categories if and only if it is full faithful and essentially surjective.
