@@ -177,3 +177,51 @@ instance : Unique (X ⟶ TopCat.of onePoint) :=
   }
 
 end section
+
+/-
+(1.2.3)
+And the localization is defined as Localization/OreLocalization in Mathlib.GroupTheory.MonoidLocalization.Basic.
+The multiplicative subset is a special case of submonoid. If view commutative ring as a commutative monoid and Ore
+property is empty property. The ring strucutre of localized ring is given in Mathlib.RingTheory.OreLocalization.Basic.
+-/
+
+section
+
+variable (R: Type*) [CommRing R] (S: Submonoid R)
+example : CommRing R[S⁻¹] := inferInstance
+
+end section
+
+/-
+(1.2.C) Show that S⁻¹A is injective if and only if S contains no zerodivisors.
+-/
+
+section
+
+variable (A: Type*) [CommRing A] (S: Submonoid A)
+
+theorem localization_map_injective_if_contains_no_zerodivisor :
+  Function.Injective (algebraMap A A[S⁻¹]) ↔ S ≤ nonZeroDivisors A := by
+    constructor
+    · intros h s hs
+      by_contra hns
+      have hp : ∃ a ≠ 0, algebraMap A A[S⁻¹] a = 0 := by
+        rw [nmem_nonZeroDivisors_iff] at hns
+        choose a ha using hns
+        use a
+        rw [IsLocalization.map_eq_zero_iff S A[S⁻¹]]
+        simp_all [ne_eq, Set.mem_setOf_eq, not_false_eq_true]
+        use s
+        rcases ha with ⟨ha1, ha2⟩
+        constructor; exact hs; rw[← ha1]; ring
+      have hq : algebraMap A A[S⁻¹] 0 = 0 := by exact algebraMap.coe_zero
+      choose a ha using hp
+      rcases ha with ⟨ha1, ha2⟩
+      have hr: algebraMap A A[S⁻¹] 0 = algebraMap A A[S⁻¹] a := by rw[ha2, hq]
+      apply h at hr
+      apply ha1
+      rw[hr]
+    · intro hm
+      exact IsLocalization.injective A[S⁻¹] hm
+
+end section
