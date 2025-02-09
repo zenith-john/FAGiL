@@ -225,3 +225,58 @@ theorem localization_map_injective_if_contains_no_zerodivisor :
       exact IsLocalization.injective A[S⁻¹] hm
 
 end section
+
+/-
+(1.2.D) Universial property of S⁻¹A.
+-/
+
+section
+
+variable (A B: Type*) [CommRing A] [CommRing B] (S: Submonoid A) (f: A →+* B)
+
+theorem universal_property_of_localization:
+  (∀ s : S, IsUnit (f s)) → (∃! g : A[S⁻¹] →+* B, f = g ∘ (algebraMap A A[S⁻¹])) := by
+  intro ha
+  use IsLocalization.lift (M := S) (g := f) ha
+  constructor
+  · simp
+    ext x
+    have hp := IsLocalization.lift_eq (M := S) (g := f) ha (R := A) (S := A[S⁻¹])
+    specialize hp x
+    simp
+  · intro h
+    intro hq
+    have hr : ∀ x : A, h ((algebraMap A A[S⁻¹]) x) = f x := by
+      intro x
+      rw[hq]
+      simp
+    have hs := IsLocalization.lift_unique ha hr
+    rw[← hs]
+
+end section
+
+/-
+(1.2.E)
+Show existence of localization of modules defined by universal property. The definition of localization
+of modules is given by quotient construction as LocalizedModule in Mathlib.Algebra.Module.LocalizedModule.Basic.
+So it remains to show that that definition satisfies the universal property.
+-/
+
+section
+
+variable (A M N) [CommRing A] (S: Submonoid A) [AddCommMonoid M] [Module A M] [AddCommMonoid N] [Module A N] (α: M →ₗ[A] N)
+
+theorem univeral_property_of_localization_of_modules:
+  (∀ s : S, IsUnit ((algebraMap A (Module.End A N)) s)) →
+  (∃! g : LocalizedModule S M →ₗ[A] N, α = g ∘ₗ (LocalizedModule.mkLinearMap S M)) := by
+  intro hs
+  use LocalizedModule.lift S α hs
+  constructor
+  · simp
+    rw[LocalizedModule.lift_comp S α hs]
+  · intro g
+    intro hp
+    rw[LocalizedModule.lift_unique S α hs g hp.symm]
+
+-- After writing above lines, I find the theorem in mathlib IsLocalizedModule.is_universal which do exactly the same thing.
+end section
