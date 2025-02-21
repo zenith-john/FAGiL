@@ -280,3 +280,37 @@ theorem univeral_property_of_localization_of_modules:
 
 -- After writing above lines, I find the theorem in mathlib IsLocalizedModule.is_universal which do exactly the same thing.
 end section
+
+/-
+(1.2.F)
+TODO:
+(a) Show that localization commutes with finite products.
+(b) Show that localization commutes with arbitrary direct sums.
+(c) Show that localization not necessarily commutes with arbitrary product.
+-/
+
+-- section
+
+-- open DirectSum
+-- universe u
+-- variable (I A) [CommRing A] [Finite I] (S: Submonoid A)
+-- variable (M: I → Type u) {m: (i: I) → AddCommMonoid (M i)} [(i: I) → Module A (M i)]
+
+-- variable (C D)
+-- def localization_commutes_with_finite_product:
+--   ((i:I) → (M i))[S⁻¹] ≃ₗ[A] ((i:I) → (M i)[S⁻¹]) := sorry
+
+-- variable (J)
+-- variable (N: J → Type u) {m: (j: J) → AddCommMonoid (N j)} [(j: J) → Module A (N j)]
+-- def N' (j: J): Type u := (N j)[S⁻¹]
+
+-- def localization_commutes_with_arbitrary_direct_sum:
+--   (⨁ j, N j)[S⁻¹] ≃ₗ[A] (⨁ j, (N j)[S⁻¹]) := sorry
+
+-- end section
+
+/-
+(1.2.5)
+Tensor product of modules is TensorProduct in Mathlib.LinearAlgebra.TensorProduct.Basic.
+It can be written as M ⊗[R] N.
+-/
