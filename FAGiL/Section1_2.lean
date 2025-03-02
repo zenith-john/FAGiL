@@ -312,5 +312,41 @@ TODO:
 /-
 (1.2.5)
 Tensor product of modules is TensorProduct in Mathlib.LinearAlgebra.TensorProduct.Basic.
-It can be written as M ⊗[R] N.
+It can be written as M ⊗[R] N (after open namespace TensorProduct).
+-/
+
+/-
+(1.2.G)
+ℤ/(10) ⊗ ℤ/(12) ≅ ℤ/(2)
+-/
+-- variable {n: ℕ} (hn: 0 < n)
+-- instance : Module ℤ (ZMod n) := inferInstance
+
+-- def ZMod_map (n m: ℕ) (hn: (m ∣ n)): (ZMod n) →ₗ[ℤ] (ZMod m) := {
+--   toFun := ZMod.castHom (m := m) (n := n) hn (ZMod m),
+--   map_add' := by
+--     intros x y
+--     exact RingHom.map_add (ZMod.castHom hn (ZMod m)) x y
+--   map_smul' := by
+--     intros x y
+--     exact map_zsmul (ZMod.castHom hn (ZMod m)) x y
+-- }
+-- open scoped TensorProduct
+-- example: (ZMod 10) ⊗[ℤ] (ZMod 12) ≃ₗ[ℤ] ZMod 2 := by sorry
+
+variable (a b c: ℕ)
+variable (n: ℕ)
+instance: Module ℤ (ZMod n) := inferInstance
+
+open TensorProduct
+def tensorProductOfZMod (a b : ℕ) : ((ZMod a) ⊗[ℤ] (ZMod b) ≃ₗ[ℤ] (ZMod (Nat.gcd a b))) := by sorry
+
+
+instance : (ZMod 10) ⊗[ℤ] (ZMod 12) ≃ₗ[ℤ] (ZMod 2) :=
+  tensorProductOfZMod 10 12
+
+/-
+(1.2.H)
+Tensor product is right exact.
+See multiple theorems in Mathlib.LinearAlgebra.TensorProduct.RightExactness.
 -/
