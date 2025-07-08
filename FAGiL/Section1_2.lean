@@ -12,6 +12,10 @@ import Mathlib.Tactic
 import Mathlib.Topology.Category.TopCat.Basic
 
 open CategoryTheory
+
+/- (1.2.1) Products defined by universal property are defined by Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts and
+Mathlib.CategoryTheory.Limits.Shapes.Products, but defined as limits and colimits of some specific functors. -/
+
 /-
 (1.2.2)
 The initial, final are defined in Mathlib.CategoryTheory.Limits.Shapes.isTerminal.
@@ -35,19 +39,23 @@ Mathlib.CategoryTheory.Limits.Shapes.IsTerminal.
 -/
 
 section
-/-
-TODO: Show emptyset is initial object in Set Category.
-def emptySet := sorry
--/
+variable (X : Type)
+-- Show that empty set is initial object in category of Sets.
+instance : Unique (Empty ⟶ X) := {
+  default := Empty.elim,
+  uniq := by
+    intro f
+    ext X
+    exact Empty.elim X
+}
+instance : CategoryTheory.Limits.IsInitial Empty :=
+  CategoryTheory.Limits.IsInitial.ofUnique Empty
 
--- Show that set with one object is final object.
-instance : (X: Type) → Unique (X ⟶ Unit) := by
-  intro X
-  exact Pi.unique
+-- Show that set with one object is final object in category of Sets.
+instance : Unique (X ⟶ Unit) := Pi.unique
 
 instance : CategoryTheory.Limits.IsTerminal Unit :=
   CategoryTheory.Limits.IsTerminal.ofUnique Unit
-
 end section
 
 section
@@ -58,11 +66,11 @@ instance : Unique (RingCat.of ℤ ⟶ R) :=
   {
     default :=
       RingCat.ofHom {
-        toFun := λ n => n • (1 : R),
+        toFun := fun n => n • (1 : R),
         map_zero' := by simp,
-        map_add' := λ a b => by simp [add_smul],
+        map_add' := fun a b => by simp [add_smul],
         map_one' := by simp,
-        map_mul' := λ a b => by simp [mul_smul]
+        map_mul' := fun a b => by simp [mul_smul]
       }
     uniq := by
       intro g
@@ -82,36 +90,36 @@ inductive zeroRing where
   | zero
 
 instance : Ring zeroRing := {
-  add := λ _ _ => zeroRing.zero,
-  add_assoc := λ _ _ _ => rfl,
+  add := fun _ _ => zeroRing.zero,
+  add_assoc := fun _ _ _ => rfl,
   zero := zeroRing.zero,
-  zero_add := λ _ => rfl,
-  add_zero := λ _ => rfl,
-  nsmul := λ _ _ => zeroRing.zero,
-  add_comm := λ _ _ => rfl,
-  mul := λ _ _ => zeroRing.zero,
-  left_distrib := λ _ _ _ => rfl,
-  right_distrib := λ _ _ _ => rfl,
-  zero_mul := λ _ => rfl,
-  mul_zero := λ _ => rfl,
-  mul_assoc := λ _ _ _ => rfl,
+  zero_add := fun _ => rfl,
+  add_zero := fun _ => rfl,
+  nsmul := fun _ _ => zeroRing.zero,
+  add_comm := fun _ _ => rfl,
+  mul := fun _ _ => zeroRing.zero,
+  left_distrib := fun _ _ _ => rfl,
+  right_distrib := fun _ _ _ => rfl,
+  zero_mul := fun _ => rfl,
+  mul_zero := fun _ => rfl,
+  mul_assoc := fun _ _ _ => rfl,
   one := zeroRing.zero,
-  one_mul := λ _ => rfl,
-  mul_one := λ _ => rfl,
-  neg := λ _ => zeroRing.zero,
-  zsmul := λ _ _ => zeroRing.zero,
-  neg_add_cancel := λ _ => rfl
+  one_mul := fun _ => rfl,
+  mul_one := fun _ => rfl,
+  neg := fun _ => zeroRing.zero,
+  zsmul := fun _ _ => zeroRing.zero,
+  neg_add_cancel := fun _ => rfl
 }
 
 instance : Unique (R ⟶ RingCat.of zeroRing) :=
   {
     default :=
       RingCat.ofHom {
-        toFun := λ n => zeroRing.zero,
+        toFun := fun n => zeroRing.zero,
         map_zero' := by simp,
-        map_add' := λ a b => by simp [add_smul],
+        map_add' := fun a b => by simp [add_smul],
         map_one' := by simp,
-        map_mul' := λ a b => by simp [mul_smul]
+        map_mul' := fun a b => by simp [mul_smul]
       }
     uniq := by
       intro g
@@ -129,10 +137,23 @@ section
 
 variable (X: TopCat)
 
-/-
-TODO: Show empty space is initial object in Top Category.
-def emptySet := sorry
--/
+-- Show empty space is initial object in Top Category.
+instance : TopologicalSpace Empty := ⊥
+
+instance : (X: TopCat) → Unique (TopCat.of Empty ⟶ X) := by
+  intro X
+  exact {
+    default := {
+      toFun := Empty.elim
+    },
+    uniq := by
+      intro f
+      ext x
+      exact Empty.elim x
+  }
+
+instance : CategoryTheory.Limits.IsInitial (TopCat.of Empty) :=
+  CategoryTheory.Limits.IsInitial.ofUnique (TopCat.of Empty)
 
 -- Show one point space is final object in Top Category.
 inductive onePoint where
@@ -291,21 +312,21 @@ TODO:
 
 -- section
 
--- open DirectSum
--- universe u
--- variable (I A) [CommRing A] [Finite I] (S: Submonoid A)
--- variable (M: I → Type u) {m: (i: I) → AddCommMonoid (M i)} [(i: I) → Module A (M i)]
+open DirectSum
+universe u
+variable (I A) [CommRing A] [Finite I] (S: Submonoid A)
+variable (M: I → Type u) {m: (i: I) → AddCommMonoid (M i)} [(i: I) → Module A (M i)]
 
--- variable (C D)
--- def localization_commutes_with_finite_product:
---   ((i:I) → (M i))[S⁻¹] ≃ₗ[A] ((i:I) → (M i)[S⁻¹]) := sorry
+variable (C D)
+def localization_commutes_with_finite_product:
+  ((i:I) → (M i))[S⁻¹] ≃ₗ[A] ((i:I) → (M i)[S⁻¹]) := sorry
 
--- variable (J)
--- variable (N: J → Type u) {m: (j: J) → AddCommMonoid (N j)} [(j: J) → Module A (N j)]
--- def N' (j: J): Type u := (N j)[S⁻¹]
+variable (J)
+variable (N: J → Type u) {m: (j: J) → AddCommMonoid (N j)} [(j: J) → Module A (N j)]
+def N' (j: J): Type u := (N j)[S⁻¹]
 
--- def localization_commutes_with_arbitrary_direct_sum:
---   (⨁ j, N j)[S⁻¹] ≃ₗ[A] (⨁ j, (N j)[S⁻¹]) := sorry
+def localization_commutes_with_arbitrary_direct_sum:
+  (⨁ j, N j)[S⁻¹] ≃ₗ[A] (⨁ j, (N j)[S⁻¹]) := sorry
 
 -- end section
 
@@ -319,20 +340,22 @@ It can be written as M ⊗[R] N (after open namespace TensorProduct).
 (1.2.G)
 ℤ/(10) ⊗ ℤ/(12) ≅ ℤ/(2)
 -/
--- variable {n: ℕ} (hn: 0 < n)
--- instance : Module ℤ (ZMod n) := inferInstance
 
--- def ZMod_map (n m: ℕ) (hn: (m ∣ n)): (ZMod n) →ₗ[ℤ] (ZMod m) := {
---   toFun := ZMod.castHom (m := m) (n := n) hn (ZMod m),
---   map_add' := by
---     intros x y
---     exact RingHom.map_add (ZMod.castHom hn (ZMod m)) x y
---   map_smul' := by
---     intros x y
---     exact map_zsmul (ZMod.castHom hn (ZMod m)) x y
--- }
--- open scoped TensorProduct
--- example: (ZMod 10) ⊗[ℤ] (ZMod 12) ≃ₗ[ℤ] ZMod 2 := by sorry
+variable {n: ℕ} (hn: 0 < n)
+instance : Module ℤ (ZMod n) := inferInstance
+
+def ZMod_map (n m: ℕ) (hn: (m ∣ n)): (ZMod n) →ₗ[ℤ] (ZMod m) := {
+  toFun := ZMod.castHom (m := m) (n := n) hn (ZMod m),
+  map_add' := by
+    intros x y
+    exact RingHom.map_add (ZMod.castHom hn (ZMod m)) x y
+  map_smul' := by
+    intros x y
+    exact map_zsmul (ZMod.castHom hn (ZMod m)) x y
+}
+
+open scoped TensorProduct
+example: (ZMod 10) ⊗[ℤ] (ZMod 12) ≃ₗ[ℤ] ZMod 2 := by sorry
 
 variable (a b c: ℕ)
 variable (n: ℕ)

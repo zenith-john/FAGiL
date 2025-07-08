@@ -158,8 +158,6 @@ instance : Category (OpenSubset γ) where
 
 /-
 (1.1.10) Definition of subcategory
-Remark: The definition of subcategory here is a bit loose, as it allow to have Hom between
-objects not in subcategory.
 -/
 structure Subcategory (C: Type*) [Category C] where
   carrier : Set C
@@ -168,6 +166,9 @@ structure Subcategory (C: Type*) [Category C] where
   comp_mem' {X Y Z} :
     X ∈ carrier → Y ∈ carrier → Z ∈ carrier →
     ∀ f ∈ hom_carrier X Y, ∀ g ∈ hom_carrier Y Z, f ≫ g ∈ hom_carrier X Z
+  -- Ensure hom_carrier is empty when objects are not in the subcategory
+  hom_empty_outside_carrier' {X Y : C} :
+    (X ∉ carrier ∨ Y ∉ carrier) → hom_carrier X Y = ∅
 
 /-
 (1.1.11) Definition of (covariant) functor and identity functor.
@@ -252,7 +253,7 @@ end section
 
 /-
 (1.1.18) Cohomology functor H^i(X, ℤ) is a contravariant functor.
-TODO: Cohomology seems not implemented in Mathlib.
+TODO: Cohomology seems not implemented in Mathlib. (Mathlib has CochainComplex, which is something we can ues to define cohomology.)
 -/
 
 /-
@@ -291,8 +292,6 @@ CategoryTheory.Equivalence in Mathlib.CategoryTheory.Equivalence.
 -/
 section
 universe u v
--- class FinDimVectorSpace (k : Type*) (V : Type*) [Field k] [AddCommMonoid V] [AddCommGroup V] [Module k V] where
---   isFinDim: Module.Finite k V
 
 variable (k: Type*) [Field k]
 structure FinDimVectorSpaceCat where
@@ -346,16 +345,15 @@ instance idToDoubleDual: NatTrans (𝟭 (FinDimVectorSpaceCat k)) (doubleDualFun
     rfl
 
 -- -- TODO: Fix this sorry.
--- noncomputable
--- instance doubleDualToId: NatTrans (doubleDualFunctor k) (𝟭 (FinDimVectorSpaceCat k)) where
---   app X := by
---     have p : Module.Free k X.carrier := by exact Module.Free.of_divisionRing k X.carrier
---     have q : Module.Finite k X.carrier := by exact X.isFinDim
---     simp
---     exact (Module.evalEquiv k X.carrier).symm.toLinearMap
---   naturality f := by
-
---     sorry
+noncomputable
+instance doubleDualToId: NatTrans (doubleDualFunctor k) (𝟭 (FinDimVectorSpaceCat k)) where
+  app X := by
+    have p : Module.Free k X.carrier := by exact Module.Free.of_divisionRing k X.carrier
+    have q : Module.Finite k X.carrier := by exact X.isFinDim
+    simp
+    exact (Module.evalEquiv k X.carrier).symm.toLinearMap
+  naturality f := by
+    sorry
 
 -- TODO: Show idToDoubleDual is Iso in Functor FinDimVectorSpaceCat k.
 
